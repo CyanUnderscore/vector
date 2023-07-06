@@ -5,20 +5,12 @@ typedef struct {
     int* data;
     size_t size;
     size_t capacity;
-    void (*push)(struct Vector*, int value);
-    void (*pop)(struct Vector*, int value);
-    void (*read)(struct Vector*);
-    int (*get)(struct Vector*, int value);
 }Vector;
 
 void vector_init(Vector* vec , size_t initial_capacity){
     vec->data = (int*) malloc(initial_capacity * sizeof(int));
     vec->size = 0;
     vec->capacity = initial_capacity;
-    vec->push = &push;
-    vec->pop = &pop;
-    vec->read = &read;
-    vec->get = &get;
 }
 
 void push(Vector* vec, int value){
@@ -29,6 +21,17 @@ void push(Vector* vec, int value){
     vec->data[vec->size] = value;
     vec->size++;
 }
+
+void insert(Vector* vec, int value, int index){
+    if(vec->size >= vec->capacity){
+        vec->capacity += vec->size - vec->capacity + 1;
+        vec->data = (int*) realloc(vec->data, vec->capacity * sizeof(int));
+    }
+    for (int i = vec->size; i > index; i-=1){
+       vec->data[i] = vec->data[i-1]; 
+    }
+    vec->data[index] = value;
+} 
 
 void read(Vector* vec){
     for(int i = 0 ;i < vec->size;i++){
@@ -61,8 +64,10 @@ int main(){ // testing the functions
         push(&vec, i);
     }
     read(&vec);
-    printf("%d\n", get(&vec, 2));
+    printf("vec[2] is %d\n", get(&vec, 2));
     pop(&vec, 2);
+    read(&vec);
+    insert(&vec, 48, 2);
     read(&vec);
     return 0;
 }
